@@ -1,0 +1,30 @@
+{
+    "name": "gamebai",
+    "version": "1.0",
+    "description": "Game Bài",
+    "main": "dist/index.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "serve": "vite preview"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/maithanhduyan/phaser-typescript-vite"
+    },
+    "author": "Mai Thành Duy An",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/maithanhduyan/phaser-typescript-vite/issues"
+    },
+    "homepage": "https://github.com/maithanhduyan/phaser-typescript-vite",
+    "devDependencies": {
+        "@rollup/plugin-alias": "^5.1.0",
+        "@rollup/plugin-commonjs": "^25.0.7",
+        "@rollup/plugin-replace": "^5.0.5",
+        "@types/node": "^20.11.6",
+        "phaser": "^3.70.0",
+        "typescript": "^5.3.3",
+        "vite": "^5.0.12"
+    }
+}
