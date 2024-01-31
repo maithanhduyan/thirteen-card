@@ -9,11 +9,6 @@
     "vite": "^5.0.12"
 ~~~~
 
-- Run App
-> yarn dev
-> yarn build
-> yarn serve
-
 ## Available Commands
 
 | Command | Description |

@@ -27,6 +27,6 @@ export enum Game_Status {
   DEALING = "DEALING"
 };
 
-export const SOCKET_URL = 'ws://simple-weboscket.deno.dev/websocket';
-export const SOCKET_LOCAL_URL = 'ws://localhost:8000/websocket';// Virtual DNS
-export const WEBSOCKET: WebSocket = new WebSocket(SOCKET_LOCAL_URL);
+export const SOCKET_URL = 'ws://thirteen-card-server.deno.dev/websocket';
+export const SOCKET_URL_LOCAL = 'ws://localhost:8000/websocket';// Virtual DNS
+export const WEBSOCKET: WebSocket = new WebSocket(SOCKET_URL);

@@ -10,14 +10,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/maithanhduyan/phaser-typescript-vite"
+        "url": "https://github.com/maithanhduyan/thirteen-card"
     },
     "author": "Mai Thành Duy An",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/maithanhduyan/phaser-typescript-vite/issues"
+        "url": "https://github.com/maithanhduyan/thirteen-card/issues"
     },
-    "homepage": "https://github.com/maithanhduyan/phaser-typescript-vite",
+    "homepage": "https://github.com/maithanhduyan/thirteen-card",
     "devDependencies": {
         "@rollup/plugin-alias": "^5.1.0",
         "@rollup/plugin-commonjs": "^25.0.7",
