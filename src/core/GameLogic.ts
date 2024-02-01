@@ -1,7 +1,4 @@
-declare namespace GameCore {
-
-}
-export class GameLogic{
+import Phaser from "phaser";
+export class GameLogic {
     constructor(){}
-
 }

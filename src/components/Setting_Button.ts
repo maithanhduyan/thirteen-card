@@ -10,7 +10,8 @@ export class SettingButton extends Phaser.Scene {
         // Add a Play Card button
         const settingButton = this.add.text(this.cameras.main.width - 80, 10, 'CÀI ĐẶT', {
             font: '12px Arial',
-            fill: '#ffffff',
+            fontSize:'12px',
+            color: '#ffffff',
             padding: { x: 8, y: 5 },
             // backgroundColor: '#0000ff'
         })

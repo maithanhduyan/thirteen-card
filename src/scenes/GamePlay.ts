@@ -25,16 +25,16 @@ class GamePlay extends Phaser.Scene {
         this.socket.onmessage = this.handleMessageReceived.bind(this);
     }
 
-    private handleMessageReceived(event: MessageEvent): void {
+    private async handleMessageReceived(event: MessageEvent): Promise<void> {
         try {
-            const json = JSON.parse(event.data);
+            const json = await JSON.parse(event.data);
             if (json.server_command && json.data) {
                 console.log(json.data);
                 const cardsData = json.data;
                 const cards = cardsData.map((cardData: { rank: string; suit: string; name: any; }) => new Card(cardData.rank, cardData.suit, cardData.name));
                 this.displayPlayerHand(cards);
             }
-            if(json.server_command){
+            if (json.server_command) {
 
             }
         } catch (error) {
@@ -44,11 +44,12 @@ class GamePlay extends Phaser.Scene {
 
     private displayPlayerHand(playerHand: Card[]): void {
         const startX = this.cameras.main.width / 2 - (playerHand.length * 30) / 2;
-        const startY = this.cameras.main.height;
+        const startY = this.cameras.main.height - 70;
 
         playerHand.forEach((card, index) => {
             const cardSprite = this.add.sprite(startX + index * 30, startY, 'cards', card.getFrame());
             cardSprite.setInteractive();
+            cardSprite.scale = 0.7
             // this.input.setDraggable(cardSprite);
             // Set up a click event listener for each card
             cardSprite.on('pointerdown', () => {
@@ -113,11 +114,11 @@ class GamePlay extends Phaser.Scene {
         console.log('Client: CHIA_BAI');
         this.socket.send('CHIA_BAI')
     }
-    
+
     createPlayButton(): void {
         const playButton = this.add.text(this.cameras.main.centerX + 100, this.cameras.main.height - 150, 'ĐÁNH BÀI', {
             font: '14px Arial',
-            fill: '#ffffff',
+            color: '#ffffff',
             padding: { x: 8, y: 5 },
             backgroundColor: '#38B249'
         })
@@ -132,12 +133,14 @@ class GamePlay extends Phaser.Scene {
     createSortButton(): void {
         const playButton = this.add.text(this.cameras.main.centerX + 300, this.cameras.main.height - 150, 'XẾP BÀI', {
             font: '14px Arial',
-            fill: '#ffffff',
+            color: '#ffffff',
             padding: { x: 8, y: 5 },
             backgroundColor: '#9E0B0F'
         })
             .setInteractive() // Make the text interactive
-            .on('pointerdown', () => this.onPlayCardButtonClicked()) // Pointerdown event
+            .on('pointerdown', () => {
+                console.log('XẾP BÀI');
+            }) // Pointerdown event
             .setOrigin(0.5, 0.5); // Center the button
 
         // Additional setup for the Play Card button, such as setting its position and depth
@@ -145,9 +148,9 @@ class GamePlay extends Phaser.Scene {
     }
 
     createSkipButton(): void {
-        const playButton = this.add.text(this.cameras.main.centerX/2 , this.cameras.main.height - 150, 'BỎ QUA', {
+        const playButton = this.add.text(this.cameras.main.centerX / 2, this.cameras.main.height - 150, 'BỎ QUA', {
             font: '14px Arial ',
-            fill: '#ffffff',
+            color: '#ffffff',
             padding: { x: 8, y: 5 },
             backgroundColor: '#CC9933'
         })

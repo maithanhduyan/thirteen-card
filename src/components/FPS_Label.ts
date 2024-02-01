@@ -8,7 +8,7 @@ export class FPSLabel extends Phaser.Scene {
     createFPSText() {
         this.fpsText = this.add.text(10, 10, '', {
             font: '12px Arial',
-            fill: '#ffffff'
+            color: '#ffffff'
         }).setDepth(1); 
 
     }

@@ -48,7 +48,7 @@ class Controller extends Phaser.Scene {
         this.registry.events.on('changedata', this.onRegistryChange, this);
         this.scene.add('FPSLabel', FPSLabel, true);
         this.scene.add('SettingButton', SettingButton, true);
-        this.scene.add('ReadyButton', ReadyButton, true);
+        // this.scene.add('ReadyButton', ReadyButton, true);
         this.scene.add('GamePlay', GamePlay, true);
         // this.scene.start('GamePlay')
     }
