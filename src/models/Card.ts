@@ -10,20 +10,9 @@ class Card {
         this.rank = rank;
         this.name = `${suit}${rank}`;
         this.originalY = 0; // Will be set when the card is displayed
-        // Set up interaction for the card
-        // this.sprite = null; // Will be set when the card is displayed
-        // this.sprite.setInteractive().on('pointerdown', this.selectCard.bind(this));
     }
 
-    // selectCard() {
-    //     this.isSelected = !this.isSelected;
-    //     if (this.sprite) {
-    //         this.sprite.y = this.isSelected ? this.originalY - 20 : this.originalY;
-    //     }
-    // }
-
     getFrame(): string {
-        // Assuming you have a method to get the correct frame name based on the card's rank and suit
         return `${this.suit}${this.rank}`;
     }
 

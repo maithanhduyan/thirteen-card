@@ -5,24 +5,27 @@ import Phaser from "phaser";
 import Card from "../models/Card";
 import CardHolder from "../models/CardsHolder";
 import Deck from "../models/Deck";
-import WebSocketClient from "../api/WebSocketClient";
-import { Game_Status, SOCKET_URL } from "../config";
 import { WEBSOCKET } from "../config"
+
 class GamePlay extends Phaser.Scene {
+
     private playerHand: CardHolder[] | undefined;
     private selectedCards: CardHolder[] = [];
     private deck: Deck;
-    private status: string = Game_Status.NOT_READY_YET;
     // Assuming there is a variable to keep track of the last card played
     private lastCardPlayed: Phaser.GameObjects.Sprite | null = null;
     socket!: WebSocket;
 
-    // webSocketClient: WebSocketClient = new WebSocketClient();
     constructor() {
         super({ key: 'GamePlay' });
         this.deck = new Deck();
         this.socket = WEBSOCKET;
         this.socket.onmessage = this.handleMessageReceived.bind(this);
+        this.socket.onopen = this.handleOnOpen.bind(this);
+    }
+
+    async handleOnOpen() {
+        this.socket.send('CHIA_BAI');
     }
 
     private async handleMessageReceived(event: MessageEvent): Promise<void> {
@@ -43,6 +46,7 @@ class GamePlay extends Phaser.Scene {
     }
 
     private displayPlayerHand(playerHand: Card[]): void {
+        
         const startX = this.cameras.main.width / 2 - (playerHand.length * 30) / 2;
         const startY = this.cameras.main.height - 70;
 
@@ -70,8 +74,7 @@ class GamePlay extends Phaser.Scene {
     private playSelectedCards(): void {
         // Play all selected cards
         this.selectedCards.forEach(card => {
-            // Assuming playCard is a method that animates the card to the center and then hides it
-            this.playCard(card.sprite);
+
         });
 
         // Clear the selected cards array
@@ -112,7 +115,6 @@ class GamePlay extends Phaser.Scene {
 
     private onPlayCardButtonClicked(): void {
         console.log('Client: CHIA_BAI');
-        this.socket.send('CHIA_BAI')
     }
 
     createPlayButton(): void {
@@ -155,12 +157,15 @@ class GamePlay extends Phaser.Scene {
             backgroundColor: '#CC9933'
         })
             .setInteractive() // Make the text interactive
-            .on('pointerdown', () => this.onPlayCardButtonClicked()) // Pointerdown event
+            .on('pointerdown', () => {
+                console.log('BỎ QUA')
+            }) // Pointerdown event
             .setOrigin(0.5, 0.5); // Center the button
 
         // Additional setup for the Play Card button, such as setting its position and depth
         playButton.setDepth(1);
     }
+
     /**
      * INIT GAME
      */
@@ -179,8 +184,8 @@ class GamePlay extends Phaser.Scene {
     * CREATE GAME SCENE
     */
     create(): void {
-        this.playerHand = this.deck.dealCards(13);
-        this.displayPlayerHand(this.playerHand);
+        // this.playerHand = this.deck.dealCards(13);
+        // this.displayPlayerHand(this.playerHand);
 
         this.createPlayButton();
         this.createSortButton();
@@ -192,6 +197,7 @@ class GamePlay extends Phaser.Scene {
      */
     update() {
     }
+
 }
 
 export default GamePlay;

@@ -1,6 +1,6 @@
 /**
  * GameOffline not using websocket
- * */ 
+ * */
 import Phaser from "phaser";
 import Card from "../models/Card";
 import CardHolder from "../models/CardsHolder";
@@ -8,11 +8,14 @@ import Deck from "../models/Deck";
 import { Game_Status } from "../config";
 
 export default class GameOffline extends Phaser.Scene {
-    private fpsText: Phaser.GameObjects.Text | undefined;
     private playerHand: CardHolder[] | undefined;
     private selectedCards: CardHolder[] = [];
     private deck: Deck;
-    private status: string = Game_Status.NOT_READY_YET;
+
+    playerHand_A!: Card[];
+    playerHand_B!: Card[];
+    playerHand_C!: Card[];
+    playerHand_D!: Card[];
 
     // Assuming there is a variable to keep track of the last card played
     private lastCardPlayed: Phaser.GameObjects.Sprite | null = null;
@@ -22,15 +25,130 @@ export default class GameOffline extends Phaser.Scene {
         this.deck = new Deck();
     }
 
+    createPlayButton(): void {
+        const playButton = this.add.text(this.cameras.main.centerX + 100, this.cameras.main.height - 150, 'ĐÁNH BÀI', {
+            font: '14px Arial',
+            color: '#ffffff',
+            padding: { x: 8, y: 5 },
+            backgroundColor: '#38B249'
+        })
+            .setInteractive() // Make the text interactive
+            .on('pointerdown', () => this.onPlayCardButtonClicked()) // Pointerdown event
+            .setOrigin(0.5, 0.5); // Center the button
+
+        // Additional setup for the Play Card button, such as setting its position and depth
+        playButton.setDepth(10);
+    }
+
+    createSortButton(): void {
+        const playButton = this.add.text(this.cameras.main.centerX + 200, this.cameras.main.height - 150, 'XẾP BÀI', {
+            font: '14px Arial',
+            color: '#ffffff',
+            padding: { x: 8, y: 5 },
+            backgroundColor: '#9E0B0F'
+        })
+            .setInteractive() // Make the text interactive
+            .on('pointerdown', () => {
+                console.log('XẾP BÀI');
+            }) // Pointerdown event
+            .setOrigin(0.5, 0.5); // Center the button
+
+        // Additional setup for the Play Card button, such as setting its position and depth
+        playButton.setDepth(10);
+    }
+
+    createSkipButton(): void {
+        const playButton = this.add.text(this.cameras.main.centerX / 2, this.cameras.main.height - 150, 'BỎ QUA', {
+            font: '14px Arial ',
+            color: '#ffffff',
+            padding: { x: 8, y: 5 },
+            backgroundColor: '#CC9933'
+        })
+            .setInteractive() // Make the text interactive
+            .on('pointerdown', () => {
+                console.log('BỎ QUA')
+            }) // Pointerdown event
+            .setOrigin(0.5, 0.5); // Center the button
+
+        // Additional setup for the Play Card button, such as setting its position and depth
+        playButton.setDepth(1);
+    }
+
+    displayPlayerHand_A(cards: Card[]) {
+        const startX = this.cameras.main.width / 2 - (cards.length * 30) / 2;
+        const startY = this.cameras.main.height - 70;
+
+        cards.forEach((card, index) => {
+            const cardSprite = this.add.sprite(startX + index * 30, startY, 'cards', card.getFrame());
+            cardSprite.scale = 0.5;
+            cardSprite.setInteractive();
+            cardSprite.on('pointerdown', () => {
+                this.playCard(cardSprite);
+                if (card.isSelected) {
+                    this.selectedCards.push(card);
+                } else {
+                    this.selectedCards = this.selectedCards.filter(c => c !== card);
+                }
+
+                // cardSprite.y = startY - 50;
+                // console.log(cardSprite);
+            });
+        });
+    }
+    displayPlayerHand_B(cards: Card[]) {
+
+        const startX = this.cameras.main.width - 70;
+        const startY = 150;
+
+        cards.forEach((card, index) => {
+            const cardSprite = this.add.sprite(startX, startY + index * 30, 'cards', card.getFrame());
+            cardSprite.angle = 90;
+            cardSprite.scale = 0.5;
+            cardSprite.setInteractive();
+            cardSprite.on('pointerdown', () => {
+                this.playCard(cardSprite);
+            });
+        });
+
+    }
+    displayPlayerHand_C(cards: Card[]) {
+        const startX = this.cameras.main.width / 2 - (cards.length * 30) / 2;;
+        const startY = 70;
+
+        cards.forEach((card, index) => {
+            const cardSprite = this.add.sprite(startX + index * 30, startY, 'cards', card.getFrame());
+            // cardSprite.angle = 90;
+            cardSprite.scale = 0.5;
+            cardSprite.setInteractive();
+            cardSprite.on('pointerdown', () => {
+                this.playCard(cardSprite);
+            });
+        });
+    }
+    displayPlayerHand_D(cards: Card[]) {
+        const startX = 70;
+        const startY = this.cameras.main.height / 2 - (cards.length * 30) / 2;;
+
+        cards.forEach((card, index) => {
+            const cardSprite = this.add.sprite(startX, startY + index * 30, 'cards', card.getFrame());
+            cardSprite.angle = 90;
+            cardSprite.scale = 0.5;
+            cardSprite.setInteractive();
+            cardSprite.on('pointerdown', () => {
+                this.playCard(cardSprite);
+            });
+        });
+    }
+
     private displayPlayerHand(playerHand: Card[]): void {
+
         const startX = this.cameras.main.width / 2 - (playerHand.length * 30) / 2;
-        const startY = this.cameras.main.height;
+        const startY = this.cameras.main.height - 70;
 
         playerHand.forEach((card, index) => {
             const cardSprite = this.add.sprite(startX + index * 30, startY, 'cards', card.getFrame());
+            cardSprite.scale = 0.7;
             cardSprite.setInteractive();
-            // this.input.setDraggable(cardSprite);
-            // Set up a click event listener for each card
             cardSprite.on('pointerdown', () => {
                 this.playCard(cardSprite);
                 if (card.isSelected) {
@@ -47,10 +165,7 @@ export default class GameOffline extends Phaser.Scene {
     }
 
     private playSelectedCards(): void {
-        // Play all selected cards
         this.selectedCards.forEach(card => {
-            // Assuming playCard is a method that animates the card to the center and then hides it
-            this.playCard(card.sprite);
         });
 
         // Clear the selected cards array
@@ -68,7 +183,7 @@ export default class GameOffline extends Phaser.Scene {
         }
 
         // The scale to shrink the card to - smaller values will shrink the card more
-        const shrinkScale = 0.5;
+        const shrinkScale = 0.3;
 
         // Update the lastCardPlayed to the current card
         this.lastCardPlayed = cardSprite;
@@ -112,40 +227,27 @@ export default class GameOffline extends Phaser.Scene {
     * CREATE GAME SCENE
     */
     create(): void {
-        this.playerHand = this.deck.dealCards(13);
-        this.displayPlayerHand(this.playerHand);
+        // Button
+        this.createPlayButton();
+        this.createSkipButton();
+        this.createSortButton();
 
-        // Add a Play Card button
-        const playCardButton = this.add.text(this.cameras.main.centerX + 300, this.cameras.main.height - 150, 'ĐÁNH BÀI', {
-            font: '14px Arial',
-            fill: '#ffffff',
-            padding: { x: 8, y: 5 },
-            backgroundColor: '#0000ff'
-        })
-            .setInteractive() // Make the text interactive
-            .on('pointerdown', () => this.onPlayCardButtonClicked()) // Pointerdown event
-            .setOrigin(0.5, 0.5); // Center the button
-
-        // Additional setup for the Play Card button, such as setting its position and depth
-        playCardButton.setDepth(10);
-
-        // Create a text object to display the FPS
-        this.fpsText = this.add.text(10, 10, '', {
-            font: '12px Arial',
-            fill: '#ffffff'
-        }).setDepth(1);
-    }
-
-    showFPS(flag: boolean) {
-        // Update the FPS text with the current FPS
-        if (flag)
-            this.fpsText.setText(`FPS: ${this.game.loop.actualFps.toFixed(2)}`);
+        // Deal Cards
+        // this.playerHand = this.deck.dealCards(13);
+        // this.displayPlayerHand(this.playerHand);
+        this.playerHand_A = this.deck.dealCards(13);
+        this.displayPlayerHand_A(this.playerHand_A)
+        this.playerHand_B = this.deck.dealCards(13);
+        this.displayPlayerHand_B(this.playerHand_B)
+        this.playerHand_C = this.deck.dealCards(13);
+        this.displayPlayerHand_C(this.playerHand_C)
+        this.playerHand_D = this.deck.dealCards(13);
+        this.displayPlayerHand_D(this.playerHand_D)
     }
 
     /**
      * UPDATE GAME SCENE
      */
     update() {
-        this.showFPS(false);
     }
 }

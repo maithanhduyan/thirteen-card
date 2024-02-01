@@ -1,10 +1,13 @@
 import Phaser from "phaser";
 
 export class ReadyButton extends Phaser.Scene {
+
     gameReady = false;
+    
     constructor() {
         super({ key: 'ReadyButton' });
     }
+
     createReadyButton() {
         const centerX = this.cameras.main.width / 2;
         const centerY = this.cameras.main.height / 2;
