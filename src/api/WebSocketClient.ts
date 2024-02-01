@@ -2,12 +2,12 @@
 import { WEBSOCKET } from "../config"
 
 export default class WebSocketClient {
-    socket: WebSocket | undefined;
-    public onMessageReceived: ((message: string) => void) | undefined;
-
+    socket!: WebSocket;
+    
     constructor() {
         this.connect();
     }
+    public onMessageReceived: ((message: string) => void) | undefined;
 
     private connect(): void {
         this.socket = WEBSOCKET;

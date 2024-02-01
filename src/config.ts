@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import WebSocketClient from "./api/WebSocketClient";
 
 export default {
   type: Phaser.AUTO,
@@ -28,5 +29,9 @@ export enum Game_Status {
 };
 
 export const SOCKET_URL = 'ws://thirteen-card-server.deno.dev/websocket';
-export const SOCKET_URL_LOCAL = 'ws://localhost:8000/websocket';// Virtual DNS
-export const WEBSOCKET: WebSocket = new WebSocket(SOCKET_URL);
+export const SOCKET_URL_LOCAL = 'ws://localhost:8000/websocket'; // Virtual DNS
+export const WEBSOCKET: WebSocket = new WebSocket(SOCKET_URL_LOCAL);
+
+export function getGlobalWebSocket(){
+  
+}

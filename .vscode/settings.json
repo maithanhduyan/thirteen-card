@@ -11,4 +11,5 @@
     "[html]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "terminal.integrated.defaultProfile.windows": "Command Prompt"
 }

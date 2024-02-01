@@ -1,45 +1,25 @@
 /**
- * Game Play Online
- */
+ * GameOffline not using websocket
+ * */ 
 import Phaser from "phaser";
 import Card from "../models/Card";
 import CardHolder from "../models/CardsHolder";
 import Deck from "../models/Deck";
-import WebSocketClient from "../api/WebSocketClient";
-import { Game_Status, SOCKET_URL } from "../config";
-import { WEBSOCKET } from "../config"
-class GamePlay extends Phaser.Scene {
+import { Game_Status } from "../config";
+
+export default class GameOffline extends Phaser.Scene {
+    private fpsText: Phaser.GameObjects.Text | undefined;
     private playerHand: CardHolder[] | undefined;
     private selectedCards: CardHolder[] = [];
     private deck: Deck;
     private status: string = Game_Status.NOT_READY_YET;
+
     // Assuming there is a variable to keep track of the last card played
     private lastCardPlayed: Phaser.GameObjects.Sprite | null = null;
-    socket!: WebSocket;
 
-    // webSocketClient: WebSocketClient = new WebSocketClient();
     constructor() {
-        super({ key: 'GamePlay' });
+        super({ key: 'GameOffline' });
         this.deck = new Deck();
-        this.socket = WEBSOCKET;
-        this.socket.onmessage = this.handleMessageReceived.bind(this);
-    }
-
-    private handleMessageReceived(event: MessageEvent): void {
-        try {
-            const json = JSON.parse(event.data);
-            if (json.server_command && json.data) {
-                console.log(json.data);
-                const cardsData = json.data;
-                const cards = cardsData.map((cardData: { rank: string; suit: string; name: any; }) => new Card(cardData.rank, cardData.suit, cardData.name));
-                this.displayPlayerHand(cards);
-            }
-            if(json.server_command){
-
-            }
-        } catch (error) {
-            console.error('Error parsing server response:', error);
-        }
     }
 
     private displayPlayerHand(playerHand: Card[]): void {
@@ -110,58 +90,14 @@ class GamePlay extends Phaser.Scene {
     }
 
     private onPlayCardButtonClicked(): void {
-        console.log('Client: CHIA_BAI');
-        this.socket.send('CHIA_BAI')
-    }
-    
-    createPlayButton(): void {
-        const playButton = this.add.text(this.cameras.main.centerX + 100, this.cameras.main.height - 150, 'ĐÁNH BÀI', {
-            font: '14px Arial',
-            fill: '#ffffff',
-            padding: { x: 8, y: 5 },
-            backgroundColor: '#38B249'
-        })
-            .setInteractive() // Make the text interactive
-            .on('pointerdown', () => this.onPlayCardButtonClicked()) // Pointerdown event
-            .setOrigin(0.5, 0.5); // Center the button
-
-        // Additional setup for the Play Card button, such as setting its position and depth
-        playButton.setDepth(10);
+        // Logic to handle when the Play Card button is clicked
     }
 
-    createSortButton(): void {
-        const playButton = this.add.text(this.cameras.main.centerX + 300, this.cameras.main.height - 150, 'XẾP BÀI', {
-            font: '14px Arial',
-            fill: '#ffffff',
-            padding: { x: 8, y: 5 },
-            backgroundColor: '#9E0B0F'
-        })
-            .setInteractive() // Make the text interactive
-            .on('pointerdown', () => this.onPlayCardButtonClicked()) // Pointerdown event
-            .setOrigin(0.5, 0.5); // Center the button
-
-        // Additional setup for the Play Card button, such as setting its position and depth
-        playButton.setDepth(10);
-    }
-
-    createSkipButton(): void {
-        const playButton = this.add.text(this.cameras.main.centerX/2 , this.cameras.main.height - 150, 'BỎ QUA', {
-            font: '14px Arial ',
-            fill: '#ffffff',
-            padding: { x: 8, y: 5 },
-            backgroundColor: '#CC9933'
-        })
-            .setInteractive() // Make the text interactive
-            .on('pointerdown', () => this.onPlayCardButtonClicked()) // Pointerdown event
-            .setOrigin(0.5, 0.5); // Center the button
-
-        // Additional setup for the Play Card button, such as setting its position and depth
-        playButton.setDepth(1);
-    }
     /**
      * INIT GAME
      */
     init() {
+        // console.log('init game')
     }
 
     /**
@@ -179,16 +115,37 @@ class GamePlay extends Phaser.Scene {
         this.playerHand = this.deck.dealCards(13);
         this.displayPlayerHand(this.playerHand);
 
-        this.createPlayButton();
-        this.createSortButton();
-        this.createSkipButton();
+        // Add a Play Card button
+        const playCardButton = this.add.text(this.cameras.main.centerX + 300, this.cameras.main.height - 150, 'ĐÁNH BÀI', {
+            font: '14px Arial',
+            fill: '#ffffff',
+            padding: { x: 8, y: 5 },
+            backgroundColor: '#0000ff'
+        })
+            .setInteractive() // Make the text interactive
+            .on('pointerdown', () => this.onPlayCardButtonClicked()) // Pointerdown event
+            .setOrigin(0.5, 0.5); // Center the button
+
+        // Additional setup for the Play Card button, such as setting its position and depth
+        playCardButton.setDepth(10);
+
+        // Create a text object to display the FPS
+        this.fpsText = this.add.text(10, 10, '', {
+            font: '12px Arial',
+            fill: '#ffffff'
+        }).setDepth(1);
+    }
+
+    showFPS(flag: boolean) {
+        // Update the FPS text with the current FPS
+        if (flag)
+            this.fpsText.setText(`FPS: ${this.game.loop.actualFps.toFixed(2)}`);
     }
 
     /**
      * UPDATE GAME SCENE
      */
     update() {
+        this.showFPS(false);
     }
 }
-
-export default GamePlay;

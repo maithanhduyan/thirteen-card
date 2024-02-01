@@ -1,16 +1,13 @@
 import Phaser from 'phaser';
-import Game from './scenes/Game';
 import Controller from './scenes/Controller';
-import GamePlay from './scenes/GamePlay';
 
 let gameSreenWidth, gameSreenHeight;
 let game;
-
+let socket;
 function onDeviceReady() {
 
   gameSreenWidth = window.innerWidth
   gameSreenHeight = window.innerHeight
-
   const config = {
     type: Phaser.AUTO,
     parent: "game",
@@ -22,11 +19,10 @@ function onDeviceReady() {
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     scene: [Controller],
-    gameVersion:"0.1"
+    gameVersion: "0.1"
   }
 
   game = new Phaser.Game(config);
-  
 }
 window.onload = onDeviceReady
 document.addEventListener('deviceready', onDeviceReady)
