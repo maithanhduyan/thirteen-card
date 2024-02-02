@@ -16,6 +16,7 @@ export default class GameOffline extends Phaser.Scene {
     playerHand_B!: Card[];
     playerHand_C!: Card[];
     playerHand_D!: Card[];
+    playerHand_Selected_A: Phaser.GameObjects.Sprite[] = new Array<Phaser.GameObjects.Sprite>;
 
     // Assuming there is a variable to keep track of the last card played
     private lastCardPlayed: Phaser.GameObjects.Sprite | null = null;
@@ -82,16 +83,11 @@ export default class GameOffline extends Phaser.Scene {
             const cardSprite = this.add.sprite(startX + index * 30, startY, 'cards', card.getFrame());
             cardSprite.scale = 0.5;
             cardSprite.setInteractive();
+            cardSprite.setData('selected', false);
+            cardSprite.setData('card', card);
+            cardSprite.setDepth(1);
             cardSprite.on('pointerdown', () => {
-                this.playCard(cardSprite);
-                if (card.isSelected) {
-                    this.selectedCards.push(card);
-                } else {
-                    this.selectedCards = this.selectedCards.filter(c => c !== card);
-                }
-
-                // cardSprite.y = startY - 50;
-                // console.log(cardSprite);
+                this.selectedCard(cardSprite, card);
             });
         });
     }
@@ -106,7 +102,8 @@ export default class GameOffline extends Phaser.Scene {
             cardSprite.scale = 0.5;
             cardSprite.setInteractive();
             cardSprite.on('pointerdown', () => {
-                this.playCard(cardSprite);
+                // this.playCard(cardSprite);
+                console.log('NOT YOUR CARD')
             });
         });
 
@@ -121,7 +118,8 @@ export default class GameOffline extends Phaser.Scene {
             cardSprite.scale = 0.5;
             cardSprite.setInteractive();
             cardSprite.on('pointerdown', () => {
-                this.playCard(cardSprite);
+                // this.playCard(cardSprite);
+                console.log('NOT YOUR CARD')
             });
         });
     }
@@ -135,7 +133,8 @@ export default class GameOffline extends Phaser.Scene {
             cardSprite.scale = 0.5;
             cardSprite.setInteractive();
             cardSprite.on('pointerdown', () => {
-                this.playCard(cardSprite);
+                // this.playCard(cardSprite);
+                console.log('NOT YOUR CARD')
             });
         });
     }
@@ -164,14 +163,44 @@ export default class GameOffline extends Phaser.Scene {
         });
     }
 
-    private playSelectedCards(): void {
-        this.selectedCards.forEach(card => {
-        });
-
-        // Clear the selected cards array
-        this.selectedCards.length = 0;
+    private selectedCard(cardSprite: Phaser.GameObjects.Sprite, card: Card): void {
+        let selected_flag = cardSprite.getData('selected');
+        // console.log(selected_flag)
+        if (!selected_flag) {
+            // this.selectedCards.push(card);
+            cardSprite.y = cardSprite.y - 20;
+            cardSprite.setData('selected', true);
+            this.playerHand_Selected_A.push(cardSprite);
+        } else {
+            cardSprite.y = cardSprite.y + 20;
+            cardSprite.setData('selected', false);
+            const index = this.playerHand_Selected_A.findIndex(c => c === cardSprite);
+            if (index !== -1) {
+                this.playerHand_Selected_A.splice(index, 1);
+            }
+        }
+        // console.log(this.playerHand_Selected_A);
     }
 
+    private playCard_A(cards: Phaser.GameObjects.Sprite[]) {
+        // The coordinates for the center of the table
+        const centerX = this.cameras.main.width / 2 - (cards.length * 30) / 2;;
+        const centerY = this.cameras.main.height / 2 + 100;
+        cards.forEach((card, index) => {
+            this.tweens.add({
+                targets: card,
+                y: centerY,
+                x: centerX + index * 30,
+                ease: 'Power2',
+                duration: 500, // Duration in milliseconds
+                onComplete: () => {
+                    // Optional: Do something when the animation completes
+                    card.setDepth(1);
+
+                }
+            });
+        });
+    }
     private playCard(cardSprite: Phaser.GameObjects.Sprite): void {
         // The coordinates for the center of the table
         const centerX = this.cameras.main.width / 2;
@@ -183,7 +212,7 @@ export default class GameOffline extends Phaser.Scene {
         }
 
         // The scale to shrink the card to - smaller values will shrink the card more
-        const shrinkScale = 0.3;
+        const shrinkScale = 0.4;
 
         // Update the lastCardPlayed to the current card
         this.lastCardPlayed = cardSprite;
@@ -206,6 +235,7 @@ export default class GameOffline extends Phaser.Scene {
 
     private onPlayCardButtonClicked(): void {
         // Logic to handle when the Play Card button is clicked
+        this.playCard_A(this.playerHand_Selected_A);
     }
 
     /**
