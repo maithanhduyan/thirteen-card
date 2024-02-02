@@ -5,7 +5,7 @@ import Phaser from "phaser";
 import Card from "../models/Card";
 import CardHolder from "../models/CardsHolder";
 import Deck from "../models/Deck";
-import { Game_Status } from "../config";
+import { sortByRank } from "../utils/Utils";
 
 export default class GameOffline extends Phaser.Scene {
     private playerHand: CardHolder[] | undefined;
@@ -79,18 +79,21 @@ export default class GameOffline extends Phaser.Scene {
         const startX = this.cameras.main.width / 2 - (cards.length * 30) / 2;
         const startY = this.cameras.main.height - 70;
 
+        cards.sort(sortByRank);
+
         cards.forEach((card, index) => {
             const cardSprite = this.add.sprite(startX + index * 30, startY, 'cards', card.getFrame());
             cardSprite.scale = 0.5;
             cardSprite.setInteractive();
             cardSprite.setData('selected', false);
             cardSprite.setData('card', card);
-            cardSprite.setDepth(1);
+            cardSprite.setDepth(index);
             cardSprite.on('pointerdown', () => {
                 this.selectedCard(cardSprite, card);
             });
         });
     }
+
     displayPlayerHand_B(cards: Card[]) {
 
         const startX = this.cameras.main.width - 70;
@@ -181,10 +184,10 @@ export default class GameOffline extends Phaser.Scene {
         }
         // console.log(this.playerHand_Selected_A);
     }
-
+    count = 0;
     private playCard_A(cards: Phaser.GameObjects.Sprite[]) {
         // The coordinates for the center of the table
-        const centerX = this.cameras.main.width / 2 - (cards.length * 30) / 2;;
+        const centerX = this.cameras.main.width / 2 - (cards.length * 30) / 2;
         const centerY = this.cameras.main.height / 2 + 100;
         cards.forEach((card, index) => {
             this.tweens.add({
@@ -192,12 +195,9 @@ export default class GameOffline extends Phaser.Scene {
                 y: centerY,
                 x: centerX + index * 30,
                 ease: 'Power2',
-                duration: 500, // Duration in milliseconds
-                onComplete: () => {
-                    // Optional: Do something when the animation completes
-                    card.setDepth(1);
-
-                }
+                duration: 400, // Duration in milliseconds
+                onStart: () => { card.setDepth(this.count++); },
+                onComplete: () => { }
             });
         });
     }
@@ -229,6 +229,11 @@ export default class GameOffline extends Phaser.Scene {
             onComplete: () => {
                 // Optional: Do something when the animation completes
                 cardSprite.setDepth(1);
+                const index = this.playerHand_A.findIndex(c => c === cardSprite.getData('card'));
+                if (index !== -1) {
+                    this.playerHand_A.splice(index, 1);
+                    console.log(this.playerHand_A)
+                }
             }
         });
     }
@@ -279,5 +284,8 @@ export default class GameOffline extends Phaser.Scene {
      * UPDATE GAME SCENE
      */
     update() {
+        if (this.playerHand_A.length = 0) {
+            console.log('HẾT BÀI')
+        }
     }
 }

@@ -13,6 +13,10 @@ export default {
   },
 };
 
+// Thirteen Order Game
+export const RanksOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace', '2'];
+export const SuitsOrder = ['hearts', 'diamonds', 'clubs', 'spades'];
+
 export enum Direction {
   Up = "UP",
   Down = "DOWN",
