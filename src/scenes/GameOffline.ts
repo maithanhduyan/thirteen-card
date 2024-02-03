@@ -6,13 +6,15 @@ import Card from "../models/Card";
 import CardHolder from "../models/CardsHolder";
 import Deck from "../models/Deck";
 import { sortByRank } from "../utils/Utils";
+import { baBich_check, isStraight } from "../core/GameLogic";
 
 export default class GameOffline extends Phaser.Scene {
     private playerHand: CardHolder[] | undefined;
     private selectedCards: CardHolder[] = [];
     private deck: Deck;
-
+    newGame = true;
     playerHand_A!: Card[];
+    player_A_Hold_Cards: Phaser.GameObjects.Sprite[] = [];
     playerHand_B!: Card[];
     playerHand_C!: Card[];
     playerHand_D!: Card[];
@@ -76,6 +78,11 @@ export default class GameOffline extends Phaser.Scene {
     }
 
     displayPlayerHand_A(cards: Card[]) {
+
+        if (baBich_check(cards)) {
+            console.log('Has 3 Spades');
+        }
+
         const startX = this.cameras.main.width / 2 - (cards.length * 30) / 2;
         const startY = this.cameras.main.height - 70;
 
@@ -83,6 +90,7 @@ export default class GameOffline extends Phaser.Scene {
 
         cards.forEach((card, index) => {
             const cardSprite = this.add.sprite(startX + index * 30, startY, 'cards', card.getFrame());
+            this.player_A_Hold_Cards.push(cardSprite);
             cardSprite.scale = 0.5;
             cardSprite.setInteractive();
             cardSprite.setData('selected', false);
@@ -168,9 +176,7 @@ export default class GameOffline extends Phaser.Scene {
 
     private selectedCard(cardSprite: Phaser.GameObjects.Sprite, card: Card): void {
         let selected_flag = cardSprite.getData('selected');
-        // console.log(selected_flag)
         if (!selected_flag) {
-            // this.selectedCards.push(card);
             cardSprite.y = cardSprite.y - 20;
             cardSprite.setData('selected', true);
             this.playerHand_Selected_A.push(cardSprite);
@@ -182,11 +188,10 @@ export default class GameOffline extends Phaser.Scene {
                 this.playerHand_Selected_A.splice(index, 1);
             }
         }
-        // console.log(this.playerHand_Selected_A);
     }
+
     count = 0;
     private playCard_A(cards: Phaser.GameObjects.Sprite[]) {
-        // The coordinates for the center of the table
         const centerX = this.cameras.main.width / 2 - (cards.length * 30) / 2;
         const centerY = this.cameras.main.height / 2 + 100;
         cards.forEach((card, index) => {
@@ -195,12 +200,30 @@ export default class GameOffline extends Phaser.Scene {
                 y: centerY,
                 x: centerX + index * 30,
                 ease: 'Power2',
-                duration: 400, // Duration in milliseconds
+                duration: 400,
                 onStart: () => { card.setDepth(this.count++); },
-                onComplete: () => { }
+                onComplete: () => {
+                    const index = this.player_A_Hold_Cards.findIndex(c => c === card);
+                    if (index !== -1) {
+                        this.player_A_Hold_Cards.splice(index, 1);
+                        this.resortCard_A();
+                    }
+                }
             });
         });
+        console.log('Checking..')
+        if (isStraight(this.playerHand_A)) {
+            console.log('isStraight')
+        }
     }
+
+    private resortCard_A() {
+        const startX = this.cameras.main.width / 2 - (this.player_A_Hold_Cards.length * 30) / 2;
+        this.player_A_Hold_Cards.forEach((cardSprite, index) => {
+            cardSprite.setX(startX + index * 30);
+        });
+    }
+
     private playCard(cardSprite: Phaser.GameObjects.Sprite): void {
         // The coordinates for the center of the table
         const centerX = this.cameras.main.width / 2;

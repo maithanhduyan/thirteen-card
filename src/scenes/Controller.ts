@@ -25,7 +25,7 @@ class Controller extends Phaser.Scene {
         console.log(event.data)
     }
 
-    onRegistryChange(parent, key, data) {
+    onRegistryChange(parent: any, key: any, data: any) {
         console.log(data);
         if (data) {
             this.socket.send('ping');

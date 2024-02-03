@@ -15,7 +15,7 @@ export default {
 
 // Thirteen Order Game
 export const RanksOrder = ['3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace', '2'];
-export const SuitsOrder = ['hearts', 'diamonds', 'clubs', 'spades'];
+export const SuitsOrder = ['spades', 'clubs', 'diamonds', 'hearts'];
 
 export enum Direction {
   Up = "UP",
@@ -36,6 +36,6 @@ export const SOCKET_URL = 'ws://thirteen-card-server.deno.dev/websocket';
 export const SOCKET_URL_LOCAL = 'ws://localhost:8000/websocket'; // Virtual DNS
 export const WEBSOCKET: WebSocket = new WebSocket(SOCKET_URL_LOCAL);
 
-export function getGlobalWebSocket(){
-  
+export function getGlobalWebSocket() {
+
 }
