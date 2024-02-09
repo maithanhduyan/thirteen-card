@@ -466,6 +466,15 @@
 		"spriteSourceSize": {"x":0,"y":0,"w":140,"h":190},
 		"sourceSize": {"w":140,"h":190},
 		"pivot": {"x":0.5,"y":0.5}
+	},
+	{
+		"filename": "back",
+		"frame": {"x":0,"y":0,"w":140,"h":190},
+		"rotated": false,
+		"trimmed": false,
+		"spriteSourceSize": {"x":0,"y":0,"w":140,"h":190},
+		"sourceSize": {"w":140,"h":190},
+		"pivot": {"x":0.5,"y":0.5}
 	}
 ],
 "meta": {

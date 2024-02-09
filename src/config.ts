@@ -23,6 +23,11 @@ export enum Direction {
   Left = "LEFT",
   Right = "RIGHT",
 }
+export enum Player_Action{
+  SKIP = "SKIP",
+  PLAY = "PLAY",
+  STOP = "STOP",
+}
 
 export enum Game_Status {
   READY = "READY",

@@ -1,24 +1,36 @@
 class Card {
 
     name: string;
-    // sprite: Phaser.GameObjects.Sprite | null; // Placeholder for the sprite, initially null
-    isSelected: boolean = false; // Track if the card is selected
-    originalY: number; // The original Y position of the card
+    isSelected: boolean = false;
+    sprite!: Phaser.GameObjects.Sprite;
+    x!: number;
+    y!: number;
+    scene!: Phaser.Scene;
 
-    constructor(public rank: string, public suit: string) {
+    constructor(rank: string, suit: string) {
         this.suit = suit;
         this.rank = rank;
         this.name = `${suit}${rank}`;
-        this.originalY = 0; // Will be set when the card is displayed
+    }
+
+    addSprite(sprite: Phaser.GameObjects.Sprite): void {
+        this.sprite = sprite
     }
 
     getFrame(): string {
         return `${this.suit}${this.rank}`;
     }
 
-    toString() {
-        return this.name;
+
+
+    toJSON(): JSON {
+        return JSON.parse(JSON.stringify({
+            client_command: 'play',
+            cards: Card,
+        }));
     }
+
+
 }
 
 interface Card {
