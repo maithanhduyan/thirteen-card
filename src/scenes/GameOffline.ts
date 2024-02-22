@@ -4,11 +4,15 @@
 import Phaser from "phaser";
 import Card from "../models/Card";
 import Deck from "../models/Deck";
-import { sortByRank } from "../utils/Utils";
+import { LOG, sortByRank } from "../utils/Utils";
 import { baBich_check, checkCards, isStraight } from "../core/GameLogic";
 import Player from "../models/Player";
+import Room from "../models/Room";
+
 
 export default class GameOffline extends Phaser.Scene {
+
+    room: Room;
     private deck: Deck;
     newGame = true;
 
@@ -27,8 +31,10 @@ export default class GameOffline extends Phaser.Scene {
 
     constructor() {
         super({ key: 'GameOffline' });
+        this.room = new Room('01');
         this.deck = new Deck();
         this.player_A = new Player('A', 'A', 'A');
+        this.room.joinRoom(this.player_A);
     }
 
     createPlayButton(): void {
@@ -92,6 +98,7 @@ export default class GameOffline extends Phaser.Scene {
             cardSprite.scale = 0.6;
             cardSprite.setInteractive();
             cardSprite.setData('selected', false);
+            cardSprite.setData('depth', cardSprite.depth);
             cardSprite.on('pointerdown', () => {
                 this.selectedCard(card);
             });
@@ -156,10 +163,8 @@ export default class GameOffline extends Phaser.Scene {
     }
 
     private displayPlayerHand(playerHand: Card[]): void {
-
         const startX = this.cameras.main.width / 2 - (playerHand.length * 30) / 2;
         const startY = this.cameras.main.height - 70;
-
     }
 
     private selectedCard(card: Card): void {
@@ -167,7 +172,7 @@ export default class GameOffline extends Phaser.Scene {
         if (!selected_flag) {
             card.sprite.y = card.sprite.y - 20;
             card.isSelected = true;
-            this.player_A.selectedCards.push(card)
+            this.player_A.selectedCards.push(card);
         } else {
             card.sprite.y = card.sprite.y + 20;
             card.isSelected = false;
@@ -178,51 +183,66 @@ export default class GameOffline extends Phaser.Scene {
         }
     }
 
+    verifyCards(cards: Card[]): boolean {
+        switch (cards.length) {
+            case 1: LOG('1 Lá Lẻ'); break;
+            case 2: LOG('2 Lá: Đôi'); break;
+            case 3: LOG('3 Lá: Sảnh 3 Cây | Tam Cô'); break;
+            case 4: LOG('4 Lá: Sảnh 4 Cây | Tứ Quý | Tứ Quý 2 Tới Trắng'); break;
+            case 5: LOG('5 Lá: Sảnh 5 Cây'); break;
+            case 6: LOG('6 Lá: Sảnh 6 Cây | 3 Đôi Thông'); break;
+            case 7: LOG('7 Lá: Sảnh 7 Cây'); break;
+            case 8: LOG('8 Lá: Sảnh 8 Cây | 4 Đôi Thông'); break;
+            case 9: LOG('9 Lá: Sảnh 9 Cây'); break;
+            case 10: LOG('10 Lá: Sảnh 10 Cây | 5 Đôi Thông'); break;
+            case 11: LOG('11 Lá: Sảnh 11 Cây'); break;
+            case 12: LOG('12 Lá: Sảnh 12 Cây | 6 Đôi Thông Tới Trắng'); break;
+            case 13: LOG('13 Lá: Sảnh 13 Cây, Rồng Tới Trắng | '); break;
+            default: LOG('not case'); break;
+        }
+        return false;
+    }
+
     count = 0;
     private playCard_A(cards: Card[]) {
-        // console.log(cards.length);
-        switch (cards.length) {
-            case 1: console.log('1 Lá Lẻ'); break;
-            case 2: console.log('2 Lá: Đôi'); break;
-            case 3: console.log('3 Lá: Sảnh 3 Cây | Tam Cô'); break;
-            case 4: console.log('4 Lá: Sảnh 4 Cây | Tứ Quý | Tứ Quý 2 Tới Trắng'); break;
-            case 5: console.log('5 Lá: Sảnh 5 Cây'); break;
-            case 6: console.log('6 Lá: Sảnh 6 Cây | 3 Đôi Thông'); break;
-            case 7: console.log('7 Lá: Sảnh 7 Cây'); break;
-            case 8: console.log('8 Lá: Sảnh 8 Cây | 4 Đôi Thông'); break;
-            case 9: console.log('9 Lá: Sảnh 9 Cây'); break;
-            case 10: console.log('10 Lá: Sảnh 10 Cây | 5 Đôi Thông'); break;
-            case 11: console.log('11 Lá: Sảnh 11 Cây'); break;
-            case 12: console.log('12 Lá: Sảnh 12 Cây | 6 Đôi Thông Tới Trắng'); break;
-            case 13: console.log('13 Lá: Sảnh 13 Cây, Rồng Tới Trắng | '); break;
-            default: console.log('not case'); break;
-        }
+        this.verifyCards(cards);
         const centerX = this.cameras.main.width / 2 - (cards.length * 30) / 2;
         const centerY = this.cameras.main.height / 2 + 100;
+        const _LENGTH = cards.length;
         cards.forEach((card, index) => {
+            card.sprite.scale = 0.5;
+            card.sprite.setDepth(this.count++);
             this.tweens.add({
                 targets: card.sprite,
-                y: centerY,
                 x: centerX + index * 30,
+                y: centerY,
                 ease: 'Power2',
                 duration: 400,
-                onStart: () => { card.sprite.setDepth(this.count++); },
+                onStart: () => {},
                 onComplete: () => {
-                    const index = this.player_A.cards.findIndex(c => c === card);
-                    if (index !== -1) {
-                        this.player_A.cards.splice(index, 1);
-                        this.cardsOnDeck.push(card);
+                    if (index + 1 == _LENGTH) {
+                        this.player_A.removeCards(cards);
+                        this.player_A.selectedCards.length = 0;
+                        LOG(cards);
+                        this.player_A.moved(cards);
+                        LOG(this.player_A.cardOnDesk);
                     }
                 }
             });
         });
-        this.player_A.selectedCards.length = 0;
+
     }
 
     private resortCard_A() {
-        const startX = this.cameras.main.width / 2 - (this.playerHand_A.length * 30) / 2;
-        this.playerHand_A.forEach((card, index) => {
+        const startX = this.cameras.main.width / 2 - (this.player_A.cards.length * 30) / 2;
+        LOG(this.player_A.cards);
+        this.player_A.cards.forEach((card, index) => {
             card.sprite.setX(startX + index * 30);
+            // this.tweens.add({
+            //     targets: card.sprite,
+            //     x: startX + index * 30,
+            //     ease: 'Power2',
+            // });
         });
     }
 
@@ -277,8 +297,7 @@ export default class GameOffline extends Phaser.Scene {
      * UPDATE GAME SCENE
      */
     update() {
-        if (this.player_A.cards.length == 0) {
-            // console.log('HẾT BÀI');
-        }
+        // Check cards if valid and show on desk.
+
     }
 }

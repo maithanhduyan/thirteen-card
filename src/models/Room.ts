@@ -4,6 +4,7 @@ class Room {
     players!: Player[];
     constructor(public id: string) {
         this.id = id;
+        this.players = [];
     }
 
     joinRoom(player: Player) {

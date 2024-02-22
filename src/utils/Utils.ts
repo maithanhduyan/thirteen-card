@@ -29,3 +29,7 @@ export function sortBySuit(a: Card, b: Card) {
         }
     }
 }
+
+export function LOG(...data: any[]){
+    console.log(...data);
+}
